@@ -1,0 +1,637 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Calculadora de Avaliação de Imóveis em Natal</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body {
+  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+  background: transparent;
+  padding: 24px 16px 32px;
+  color: #1f2937;
+}
+
+.calc-wrap { max-width: 860px; margin: 0 auto; }
+
+/* STEPS */
+.calc-form {
+  background: #fff;
+  border: 1px solid #e5e7eb;
+  border-radius: 16px;
+  padding: 32px;
+  box-shadow: 0 2px 12px rgba(0,0,0,0.06);
+  margin-bottom: 24px;
+}
+
+.calc-section { margin-bottom: 28px; }
+.calc-section:last-child { margin-bottom: 0; }
+
+.calc-label {
+  font-size: 13px;
+  font-weight: 700;
+  color: #374151;
+  margin-bottom: 10px;
+  display: block;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+/* SELECT */
+.calc-select {
+  width: 100%;
+  padding: 13px 16px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  font-size: 15px;
+  color: #1f2937;
+  background: #fff;
+  appearance: none;
+  -webkit-appearance: none;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='16' height='16' viewBox='0 0 24 24' fill='none' stroke='%236b7280' stroke-width='2'%3E%3Cpolyline points='6 9 12 15 18 9'/%3E%3C/svg%3E");
+  background-repeat: no-repeat;
+  background-position: right 14px center;
+  cursor: pointer;
+  transition: border-color 0.15s;
+  outline: none;
+}
+.calc-select:focus { border-color: #1B3A6B; }
+
+/* NUMBER INPUT */
+.calc-input-wrap {
+  display: flex;
+  align-items: center;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  overflow: hidden;
+  transition: border-color 0.15s;
+}
+.calc-input-wrap:focus-within { border-color: #1B3A6B; }
+.calc-suffix {
+  padding: 0 14px;
+  font-size: 13px;
+  font-weight: 600;
+  color: #9ca3af;
+  background: #f9fafb;
+  height: 50px;
+  display: flex;
+  align-items: center;
+  border-left: 1px solid #e5e7eb;
+}
+.calc-number {
+  flex: 1;
+  border: none;
+  outline: none;
+  padding: 0 16px;
+  height: 50px;
+  font-size: 20px;
+  font-weight: 700;
+  color: #0A1628;
+  background: #fff;
+  -moz-appearance: textfield;
+}
+.calc-number::-webkit-outer-spin-button,
+.calc-number::-webkit-inner-spin-button { -webkit-appearance: none; margin: 0; }
+
+/* CHIP BUTTONS */
+.calc-chips { display: flex; flex-wrap: wrap; gap: 10px; }
+.calc-chip {
+  padding: 10px 18px;
+  border: 2px solid #e5e7eb;
+  border-radius: 50px;
+  background: #fff;
+  font-size: 14px;
+  font-weight: 500;
+  color: #6b7280;
+  cursor: pointer;
+  transition: all 0.15s;
+  white-space: nowrap;
+}
+.calc-chip:hover { border-color: #1B3A6B; color: #1B3A6B; }
+.calc-chip-active {
+  background: #1B3A6B !important;
+  border-color: #1B3A6B !important;
+  color: #fff !important;
+}
+
+/* CONSERVATION CARDS */
+.calc-conserv { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+@media (max-width: 500px) { .calc-conserv { grid-template-columns: 1fr; } }
+.calc-conserv-card {
+  padding: 12px 14px;
+  border: 2px solid #e5e7eb;
+  border-radius: 10px;
+  background: #fff;
+  cursor: pointer;
+  transition: all 0.15s;
+}
+.calc-conserv-card:hover { border-color: #1B3A6B; }
+.calc-conserv-card.calc-chip-active { background: #f0f4ff; border-color: #1B3A6B; }
+.calc-conserv-card .conserv-title {
+  font-size: 13px;
+  font-weight: 600;
+  color: #374151;
+  margin-bottom: 3px;
+}
+.calc-conserv-card.calc-chip-active .conserv-title { color: #1B3A6B; }
+.calc-conserv-card .conserv-desc {
+  font-size: 11px;
+  color: #9ca3af;
+  line-height: 1.4;
+}
+
+/* CTA BUTTON */
+.calc-btn {
+  width: 100%;
+  padding: 16px;
+  background: #1B3A6B;
+  color: #fff;
+  border: none;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: 700;
+  cursor: pointer;
+  transition: background 0.15s;
+  margin-top: 8px;
+  letter-spacing: 0.3px;
+}
+.calc-btn:hover { background: #0A1628; }
+.calc-btn:disabled { background: #9ca3af; cursor: not-allowed; }
+
+/* RESULT PANEL */
+.calc-result {
+  display: none;
+  background: #0A1628;
+  border-radius: 16px;
+  padding: 32px;
+  color: #fff;
+  margin-bottom: 24px;
+}
+.calc-result.visible { display: block; }
+
+.result-hero { text-align: center; margin-bottom: 28px; }
+.result-hero-label {
+  font-size: 12px;
+  font-weight: 700;
+  letter-spacing: 1.2px;
+  text-transform: uppercase;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 12px;
+}
+.result-range {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-bottom: 8px;
+}
+.result-min, .result-max {
+  font-size: 22px;
+  font-weight: 700;
+  color: rgba(201,168,76,0.7);
+}
+.result-mid {
+  font-size: 38px;
+  font-weight: 800;
+  color: #C9A84C;
+}
+.result-sep { font-size: 20px; color: rgba(255,255,255,0.3); }
+.result-sub { font-size: 13px; color: rgba(255,255,255,0.4); margin-top: 6px; }
+
+.result-metrics {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 12px;
+  margin-bottom: 24px;
+}
+@media (max-width: 480px) { .result-metrics { grid-template-columns: 1fr 1fr; } }
+.result-metric {
+  background: rgba(255,255,255,0.06);
+  border: 1px solid rgba(255,255,255,0.08);
+  border-radius: 10px;
+  padding: 14px;
+  text-align: center;
+}
+.rm-label { font-size: 10px; color: rgba(255,255,255,0.4); text-transform: uppercase; letter-spacing: 0.5px; margin-bottom: 6px; }
+.rm-val { font-size: 16px; font-weight: 700; color: #fff; }
+.rm-val-gold { color: #C9A84C; }
+
+.result-bar-section { margin-bottom: 20px; }
+.result-bar-label {
+  display: flex;
+  justify-content: space-between;
+  font-size: 12px;
+  color: rgba(255,255,255,0.4);
+  margin-bottom: 8px;
+}
+.result-bar-track {
+  height: 8px;
+  background: rgba(255,255,255,0.08);
+  border-radius: 6px;
+  overflow: hidden;
+  position: relative;
+}
+.result-bar-fill {
+  height: 100%;
+  background: linear-gradient(90deg, #3b82f6, #C9A84C);
+  border-radius: 6px;
+  transition: width 0.6s ease;
+}
+.result-score-label { font-size: 12px; color: rgba(255,255,255,0.5); margin-top: 6px; text-align: right; }
+
+.result-factors { margin-bottom: 20px; }
+.result-factors-title {
+  font-size: 11px;
+  font-weight: 700;
+  color: rgba(255,255,255,0.4);
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+  margin-bottom: 12px;
+}
+.factor-row {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+  border-bottom: 1px solid rgba(255,255,255,0.06);
+  font-size: 13px;
+}
+.factor-row:last-child { border-bottom: none; }
+.factor-name { color: rgba(255,255,255,0.6); }
+.factor-val { font-weight: 600; }
+.factor-pos { color: #4ade80; }
+.factor-neu { color: rgba(255,255,255,0.6); }
+.factor-neg { color: #f87171; }
+
+.result-disclaimer {
+  font-size: 11px;
+  color: rgba(255,255,255,0.25);
+  line-height: 1.6;
+  border-top: 1px solid rgba(255,255,255,0.07);
+  padding-top: 16px;
+}
+
+.calc-reset {
+  display: block;
+  width: 100%;
+  padding: 12px;
+  background: transparent;
+  border: 2px solid rgba(255,255,255,0.15);
+  border-radius: 10px;
+  color: rgba(255,255,255,0.5);
+  font-size: 13px;
+  font-weight: 600;
+  cursor: pointer;
+  margin-top: 16px;
+  transition: all 0.15s;
+}
+.calc-reset:hover { border-color: rgba(255,255,255,0.3); color: rgba(255,255,255,0.8); }
+
+/* NOTE */
+.calc-note {
+  background: rgba(201,168,76,0.08);
+  border: 1px solid rgba(201,168,76,0.2);
+  border-radius: 10px;
+  padding: 14px 16px;
+  font-size: 12px;
+  color: #C9A84C;
+  line-height: 1.6;
+  text-align: center;
+}
+</style>
+</head>
+<body>
+
+<div class="calc-wrap">
+
+  <!-- FORM -->
+  <div class="calc-form" id="calcForm">
+
+    <div class="calc-section">
+      <label class="calc-label">Bairro / Região em Natal</label>
+      <select class="calc-select" id="c_bairro">
+        <option value="">Selecione o bairro</option>
+        <optgroup label="Alto Padrão">
+          <option value="ponta_negra_alto">Ponta Negra (Frente Mar)</option>
+          <option value="via_costeira">Via Costeira</option>
+          <option value="lagoa_nova">Lagoa Nova</option>
+          <option value="capim_macio">Capim Macio</option>
+          <option value="tirol">Tirol</option>
+          <option value="petropolis">Petrópolis</option>
+        </optgroup>
+        <optgroup label="Médio Padrão">
+          <option value="ponta_negra_int">Ponta Negra (Interior)</option>
+          <option value="candelaria">Candelária</option>
+          <option value="neópolis">Neópolis</option>
+          <option value="pitimbu">Pitimbu</option>
+          <option value="cidade_nova">Cidade Nova</option>
+          <option value="morro_branco">Morro Branco</option>
+        </optgroup>
+        <optgroup label="Popular">
+          <option value="nordeste">Nordeste</option>
+          <option value="igapo">Igapó</option>
+          <option value="quintas">Quintas</option>
+          <option value="outro">Outro bairro</option>
+        </optgroup>
+      </select>
+    </div>
+
+    <div class="calc-section">
+      <label class="calc-label">Área do imóvel</label>
+      <div class="calc-input-wrap">
+        <input type="number" id="c_area" class="calc-number" min="20" max="1000" step="1" value="80" placeholder="80">
+        <span class="calc-suffix">m²</span>
+      </div>
+    </div>
+
+    <div class="calc-section">
+      <label class="calc-label">Tipo de imóvel</label>
+      <div class="calc-chips">
+        <button type="button" class="calc-chip calc-chip-active" data-group="tipo" data-val="apartamento" onclick="cSelect(this,'tipo')">Apartamento</button>
+        <button type="button" class="calc-chip" data-group="tipo" data-val="casa" onclick="cSelect(this,'tipo')">Casa</button>
+        <button type="button" class="calc-chip" data-group="tipo" data-val="cobertura" onclick="cSelect(this,'tipo')">Cobertura</button>
+        <button type="button" class="calc-chip" data-group="tipo" data-val="studio" onclick="cSelect(this,'tipo')">Studio / Kitnet</button>
+      </div>
+    </div>
+
+    <div class="calc-section">
+      <label class="calc-label">Estado de conservação</label>
+      <div class="calc-conserv">
+        <div class="calc-conserv-card calc-chip-active" data-group="conserv" data-val="novo" onclick="cSelect(this,'conserv')">
+          <div class="conserv-title">✨ Novo / Na planta</div>
+          <div class="conserv-desc">Nunca habitado ou recém entregue</div>
+        </div>
+        <div class="calc-conserv-card" data-group="conserv" data-val="otimo" onclick="cSelect(this,'conserv')">
+          <div class="conserv-title">🏆 Ótimo estado</div>
+          <div class="conserv-desc">Reforma completa recente</div>
+        </div>
+        <div class="calc-conserv-card" data-group="conserv" data-val="bom" onclick="cSelect(this,'conserv')">
+          <div class="conserv-title">👍 Bom estado</div>
+          <div class="conserv-desc">Pequenas reformas recentes</div>
+        </div>
+        <div class="calc-conserv-card" data-group="conserv" data-val="regular" onclick="cSelect(this,'conserv')">
+          <div class="conserv-title">🔧 Regular</div>
+          <div class="conserv-desc">Precisa de reforma moderada</div>
+        </div>
+        <div class="calc-conserv-card" data-group="conserv" data-val="ruim" onclick="cSelect(this,'conserv')">
+          <div class="conserv-title">⚠️ Precário</div>
+          <div class="conserv-desc">Necessita reforma ampla</div>
+        </div>
+      </div>
+    </div>
+
+    <div class="calc-section">
+      <label class="calc-label">Quartos</label>
+      <div class="calc-chips">
+        <button type="button" class="calc-chip" data-group="quartos" data-val="0" onclick="cSelect(this,'quartos')">Studio</button>
+        <button type="button" class="calc-chip" data-group="quartos" data-val="1" onclick="cSelect(this,'quartos')">1</button>
+        <button type="button" class="calc-chip calc-chip-active" data-group="quartos" data-val="2" onclick="cSelect(this,'quartos')">2</button>
+        <button type="button" class="calc-chip" data-group="quartos" data-val="3" onclick="cSelect(this,'quartos')">3</button>
+        <button type="button" class="calc-chip" data-group="quartos" data-val="4" onclick="cSelect(this,'quartos')">4+</button>
+      </div>
+    </div>
+
+    <div class="calc-section">
+      <label class="calc-label">Banheiros</label>
+      <div class="calc-chips">
+        <button type="button" class="calc-chip calc-chip-active" data-group="banheiros" data-val="1" onclick="cSelect(this,'banheiros')">1</button>
+        <button type="button" class="calc-chip" data-group="banheiros" data-val="2" onclick="cSelect(this,'banheiros')">2</button>
+        <button type="button" class="calc-chip" data-group="banheiros" data-val="3" onclick="cSelect(this,'banheiros')">3</button>
+        <button type="button" class="calc-chip" data-group="banheiros" data-val="4" onclick="cSelect(this,'banheiros')">4+</button>
+      </div>
+    </div>
+
+    <div class="calc-section">
+      <label class="calc-label">Vagas de garagem</label>
+      <div class="calc-chips">
+        <button type="button" class="calc-chip calc-chip-active" data-group="vagas" data-val="0" onclick="cSelect(this,'vagas')">Sem vagas</button>
+        <button type="button" class="calc-chip" data-group="vagas" data-val="1" onclick="cSelect(this,'vagas')">1</button>
+        <button type="button" class="calc-chip" data-group="vagas" data-val="2" onclick="cSelect(this,'vagas')">2</button>
+        <button type="button" class="calc-chip" data-group="vagas" data-val="3" onclick="cSelect(this,'vagas')">3+</button>
+      </div>
+    </div>
+
+    <div class="calc-section">
+      <label class="calc-label">Possui piscina / lazer privativo?</label>
+      <div class="calc-chips">
+        <button type="button" class="calc-chip calc-chip-active" data-group="lazer" data-val="nao" onclick="cSelect(this,'lazer')">Não</button>
+        <button type="button" class="calc-chip" data-group="lazer" data-val="sim" onclick="cSelect(this,'lazer')">Sim</button>
+      </div>
+    </div>
+
+    <button type="button" class="calc-btn" onclick="cCalc()">Calcular valor do imóvel →</button>
+
+  </div>
+
+  <!-- RESULT -->
+  <div class="calc-result" id="calcResult">
+
+    <div class="result-hero">
+      <div class="result-hero-label">Estimativa de valor do imóvel em Natal</div>
+      <div class="result-range">
+        <span class="result-min" id="r_min"></span>
+        <span class="result-sep">—</span>
+        <span class="result-mid" id="r_mid"></span>
+        <span class="result-sep">—</span>
+        <span class="result-max" id="r_max"></span>
+      </div>
+      <div class="result-sub" id="r_sub"></div>
+    </div>
+
+    <div class="result-metrics">
+      <div class="result-metric">
+        <div class="rm-label">Preço por m²</div>
+        <div class="rm-val rm-val-gold" id="r_m2">—</div>
+      </div>
+      <div class="result-metric">
+        <div class="rm-label">Área avaliada</div>
+        <div class="rm-val" id="r_area">—</div>
+      </div>
+      <div class="result-metric">
+        <div class="rm-label">Bairro</div>
+        <div class="rm-val" id="r_bairro">—</div>
+      </div>
+    </div>
+
+    <div class="result-bar-section">
+      <div class="result-bar-label">
+        <span>Posicionamento no mercado local</span>
+        <span id="r_score_label">—</span>
+      </div>
+      <div class="result-bar-track">
+        <div class="result-bar-fill" id="r_bar" style="width:0%"></div>
+      </div>
+      <div class="result-score-label" id="r_score_text"></div>
+    </div>
+
+    <div class="result-factors">
+      <div class="result-factors-title">Fatores considerados na avaliação</div>
+      <div class="factor-row"><span class="factor-name">Localização / Bairro</span><span class="factor-val" id="f_bairro">—</span></div>
+      <div class="factor-row"><span class="factor-name">Estado de conservação</span><span class="factor-val" id="f_conserv">—</span></div>
+      <div class="factor-row"><span class="factor-name">Tipo de imóvel</span><span class="factor-val" id="f_tipo">—</span></div>
+      <div class="factor-row"><span class="factor-name">Quartos / Banheiros</span><span class="factor-val" id="f_quartos">—</span></div>
+      <div class="factor-row"><span class="factor-name">Vagas de garagem</span><span class="factor-val" id="f_vagas">—</span></div>
+      <div class="factor-row"><span class="factor-name">Lazer privativo</span><span class="factor-val" id="f_lazer">—</span></div>
+    </div>
+
+    <div class="result-disclaimer">
+      Estimativa baseada em dados de mercado imobiliário de Natal (RN) — preços médios de anúncios e transações recentes por bairro. Os valores são orientativos e podem variar conforme características específicas do imóvel, andar, orientação solar e conjuntura de mercado. Para uma avaliação formal, consulte um corretor credenciado (CRECI).
+    </div>
+
+    <button type="button" class="calc-reset" onclick="cReset()">← Fazer nova avaliação</button>
+
+  </div>
+
+  <div class="calc-note">
+    📍 Calculadora calibrada com dados reais do mercado imobiliário de Natal, RN · Atualizado 2025–2026
+  </div>
+
+</div>
+
+<script>
+// ── Preços base por m² em Natal (R$) — dados de mercado 2025-2026 ──────────
+var BAIRROS = {
+  ponta_negra_alto: { nome: 'Ponta Negra (Frente Mar)', base: 9500,  tier: 'premium' },
+  via_costeira:     { nome: 'Via Costeira',              base: 8200,  tier: 'premium' },
+  lagoa_nova:       { nome: 'Lagoa Nova',                base: 7000,  tier: 'alto'    },
+  capim_macio:      { nome: 'Capim Macio',               base: 6500,  tier: 'alto'    },
+  tirol:            { nome: 'Tirol',                     base: 7200,  tier: 'alto'    },
+  petropolis:       { nome: 'Petrópolis',                base: 6800,  tier: 'alto'    },
+  ponta_negra_int:  { nome: 'Ponta Negra (Interior)',    base: 6000,  tier: 'medio'   },
+  candelaria:       { nome: 'Candelária',                base: 5200,  tier: 'medio'   },
+  neópolis:         { nome: 'Neópolis',                  base: 4800,  tier: 'medio'   },
+  pitimbu:          { nome: 'Pitimbu',                   base: 4500,  tier: 'medio'   },
+  cidade_nova:      { nome: 'Cidade Nova',               base: 4200,  tier: 'medio'   },
+  morro_branco:     { nome: 'Morro Branco',              base: 4000,  tier: 'medio'   },
+  nordeste:         { nome: 'Nordeste',                  base: 3200,  tier: 'popular' },
+  igapo:            { nome: 'Igapó',                     base: 3000,  tier: 'popular' },
+  quintas:          { nome: 'Quintas',                   base: 2800,  tier: 'popular' },
+  outro:            { nome: 'Outro bairro',              base: 3500,  tier: 'popular' },
+};
+
+// Multiplicadores
+var TIPO_MULT    = { apartamento: 1.00, casa: 0.92, cobertura: 1.25, studio: 0.88 };
+var CONSERV_MULT = { novo: 1.18, otimo: 1.08, bom: 1.00, regular: 0.88, ruim: 0.75 };
+var QUARTOS_ADD  = { 0: -0.05, 1: 0.00, 2: 0.03, 3: 0.06, 4: 0.09 };
+var BANHEIROS_ADD= { 1: 0.00, 2: 0.03, 3: 0.06, 4: 0.08 };
+var VAGAS_ADD    = { 0: -0.03, 1: 0.04, 2: 0.08, 3: 0.11 };
+var LAZER_ADD    = { nao: 0.00, sim: 0.07 };
+
+// State
+var cState = {
+  tipo: 'apartamento',
+  conserv: 'novo',
+  quartos: '2',
+  banheiros: '1',
+  vagas: '0',
+  lazer: 'nao'
+};
+
+function cSelect(el, group) {
+  // deactivate all in group
+  var all = document.querySelectorAll('[data-group="' + group + '"]');
+  for (var i = 0; i < all.length; i++) {
+    all[i].classList.remove('calc-chip-active');
+  }
+  el.classList.add('calc-chip-active');
+  cState[group] = el.getAttribute('data-val');
+}
+
+function cFmt(v) {
+  return 'R$ ' + Math.round(v).toLocaleString('pt-BR');
+}
+function cFmtM2(v) {
+  return 'R$ ' + Math.round(v).toLocaleString('pt-BR') + '/m²';
+}
+
+function cSet(id, val) {
+  var el = document.getElementById(id);
+  if (el) el.textContent = val;
+}
+function cSetClass(id, cls) {
+  var el = document.getElementById(id);
+  if (el) { el.className = 'factor-val ' + cls; }
+}
+
+function cCalc() {
+  var bairroKey = document.getElementById('c_bairro').value;
+  var area      = parseFloat(document.getElementById('c_area').value) || 0;
+
+  if (!bairroKey) { alert('Por favor, selecione o bairro do imóvel.'); return; }
+  if (area < 20)  { alert('Informe uma área válida (mínimo 20 m²).'); return; }
+
+  var bairro   = BAIRROS[bairroKey];
+  var baseM2   = bairro.base;
+  var tipoMult = TIPO_MULT[cState.tipo]    || 1;
+  var conservM = CONSERV_MULT[cState.conserv] || 1;
+  var quartosA = QUARTOS_ADD[cState.quartos]  || 0;
+  var banhA    = BANHEIROS_ADD[cState.banheiros] || 0;
+  var vagasA   = VAGAS_ADD[cState.vagas]      || 0;
+  var lazerA   = LAZER_ADD[cState.lazer]      || 0;
+
+  var totalMult = tipoMult * conservM * (1 + quartosA + banhA + vagasA + lazerA);
+  var m2Price   = baseM2 * totalMult;
+  var midVal    = m2Price * area;
+  var minVal    = midVal * 0.88;
+  var maxVal    = midVal * 1.12;
+
+  // Score 0-100 para posicionamento de mercado
+  var minM2 = 2500, maxM2 = 11000;
+  var score = Math.min(100, Math.max(5, Math.round((m2Price - minM2) / (maxM2 - minM2) * 100)));
+
+  var scoreLabel, scoreText;
+  if (score >= 75)      { scoreLabel = 'Premium'; scoreText = 'Acima da média do mercado de Natal'; }
+  else if (score >= 50) { scoreLabel = 'Médio-alto'; scoreText = 'Na faixa alta do mercado local'; }
+  else if (score >= 30) { scoreLabel = 'Médio'; scoreText = 'Na média do mercado de Natal'; }
+  else                  { scoreLabel = 'Acessível'; scoreText = 'Na faixa econômica do mercado'; }
+
+  // Labels fator
+  var conservLabels = { novo:'✨ Novo (+18%)', otimo:'🏆 Ótimo (+8%)', bom:'👍 Bom (base)', regular:'🔧 Regular (-12%)', ruim:'⚠️ Precário (-25%)' };
+  var tipoLabels    = { apartamento:'Apartamento', casa:'Casa (-8%)', cobertura:'Cobertura (+25%)', studio:'Studio (-12%)' };
+  var vagasLabels   = { 0:'Sem vagas (-3%)', 1:'1 vaga (+4%)', 2:'2 vagas (+8%)', 3:'3+ vagas (+11%)' };
+  var lazerLabels   = { nao:'Não incluído', sim:'Sim (+7%)' };
+
+  // Render
+  cSet('r_min',    cFmt(minVal));
+  cSet('r_mid',    cFmt(midVal));
+  cSet('r_max',    cFmt(maxVal));
+  cSet('r_sub',    'Estimativa para ' + area + ' m² em ' + bairro.nome);
+  cSet('r_m2',     cFmtM2(m2Price));
+  cSet('r_area',   area + ' m²');
+  cSet('r_bairro', bairro.nome);
+  document.getElementById('r_bar').style.width = score + '%';
+  cSet('r_score_label', scoreLabel);
+  cSet('r_score_text',  scoreText);
+
+  cSet('f_bairro',  bairro.nome + ' (' + bairro.tier + ')');
+  cSet('f_conserv', conservLabels[cState.conserv]);
+  cSet('f_tipo',    tipoLabels[cState.tipo]);
+  cSet('f_quartos', cState.quartos + ' quarto(s) · ' + cState.banheiros + ' banheiro(s)');
+  cSet('f_vagas',   vagasLabels[cState.vagas]);
+  cSet('f_lazer',   lazerLabels[cState.lazer]);
+
+  // Color coding factors
+  cSetClass('f_bairro',  bairro.tier === 'premium' ? 'factor-pos' : bairro.tier === 'popular' ? 'factor-neg' : 'factor-neu');
+  cSetClass('f_conserv', cState.conserv === 'novo' || cState.conserv === 'otimo' ? 'factor-pos' : cState.conserv === 'ruim' ? 'factor-neg' : 'factor-neu');
+  cSetClass('f_tipo',    cState.tipo === 'cobertura' ? 'factor-pos' : cState.tipo === 'studio' ? 'factor-neg' : 'factor-neu');
+  cSetClass('f_vagas',   parseInt(cState.vagas) >= 2 ? 'factor-pos' : cState.vagas === '0' ? 'factor-neg' : 'factor-neu');
+  cSetClass('f_lazer',   cState.lazer === 'sim' ? 'factor-pos' : 'factor-neu');
+
+  // Show result
+  document.getElementById('calcForm').style.display = 'none';
+  document.getElementById('calcResult').classList.add('visible');
+
+  // Scroll top inside iframe
+  window.scrollTo(0, 0);
+}
+
+function cReset() {
+  document.getElementById('calcForm').style.display = 'block';
+  document.getElementById('calcResult').classList.remove('visible');
+  window.scrollTo(0, 0);
+}
+</script>
+</body>
+</html>
